@@ -1,4 +1,4 @@
-# n8n-nodes-threads
+# @rizkifirmansyah/n8n-nodes-threads-api
 
 ![Threads Node](nodes/Threads/threads.svg)
 
@@ -44,13 +44,13 @@ Manage your Threads presence at scale: create posts (text, images, videos, carou
 ### Community Nodes (Recommended)
 1. Go to **Settings > Community Nodes** in your n8n instance.
 2. Select **Install**.
-3. Enter `n8n-nodes-threads` in the **npm Package Name** field.
+3. Enter `@rizkifirmansyah/n8n-nodes-threads-api` in the **npm Package Name** field.
 4. Agree to the risks and select **Install**.
 
 ### Manual Installation (Self-Hosted / Docker)
 Inside your n8n root directory or custom nodes directory:
 ```bash
-npm install n8n-nodes-threads
+npm install @rizkifirmansyah/n8n-nodes-threads-api
 ```
 
 ---
