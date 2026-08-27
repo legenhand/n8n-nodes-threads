@@ -20,7 +20,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/legenhand/n8n-nodes-threads.git"
+		"url": "git+https://github.com/legenhand/n8n-nodes-threads.git"
 	},
 	"main": "index.js",
 	"scripts": {
@@ -30,7 +30,7 @@
 		"lint": "n8n-node lint",
 		"lint:fix": "n8n-node lint --fix",
 		"release": "n8n-node release",
-		"prepublishOnly": "n8n-node prerelease"
+		"prepublishOnly": "npm run build && npm run lint"
 	},
 	"files": [
 		"dist"
