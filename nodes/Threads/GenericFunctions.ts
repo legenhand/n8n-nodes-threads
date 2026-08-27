@@ -12,6 +12,33 @@ import { NodeApiError, NodeOperationError, sleep } from 'n8n-workflow';
 export const THREADS_API_BASE_URL = 'https://graph.threads.net/v1.0';
 
 /**
+ * Helper to get the access token from either OAuth2 or direct API token credentials
+ */
+async function getAccessToken(
+	context: IExecuteFunctions | IWebhookFunctions | IHookFunctions,
+): Promise<string> {
+	const authenticationMethod = context.getNodeParameter(
+		'authentication',
+		0,
+		'oAuth2',
+	) as 'oAuth2' | 'accessToken';
+
+	if (authenticationMethod === 'oAuth2') {
+		const credentials = await context.getCredentials('threadsOAuth2Api');
+		const oauthTokenData = (credentials.oauthTokenData || {}) as IDataObject;
+		return (
+			(oauthTokenData.access_token as string) ||
+			(credentials.accessToken as string) ||
+			(oauthTokenData.accessToken as string) ||
+			''
+		);
+	}
+
+	const credentials = await context.getCredentials('threadsApi');
+	return (credentials.accessToken as string) || '';
+}
+
+/**
  * Make an authenticated API request to Meta Threads API
  */
 export async function threadsApiRequest(
@@ -21,14 +48,7 @@ export async function threadsApiRequest(
 	body: IDataObject = {},
 	qs: IDataObject = {},
 ): Promise<IDataObject> {
-	const authenticationMethod = this.getNodeParameter(
-		'authentication',
-		0,
-		'oAuth2',
-	) as 'oAuth2' | 'accessToken';
-
-	const credentialType =
-		authenticationMethod === 'oAuth2' ? 'threadsOAuth2Api' : 'threadsApi';
+	const accessToken = await getAccessToken(this);
 
 	const options: IHttpRequestOptions = {
 		method,
@@ -36,6 +56,9 @@ export async function threadsApiRequest(
 		url: endpoint,
 		qs,
 		json: true,
+		headers: {
+			Authorization: `Bearer ${accessToken}`,
+		},
 	};
 
 	if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
@@ -46,11 +69,7 @@ export async function threadsApiRequest(
 	}
 
 	try {
-		return await this.helpers.httpRequestWithAuthentication.call(
-			this,
-			credentialType,
-			options,
-		);
+		return await this.helpers.httpRequest.call(this, options);
 	} catch (error) {
 		throw new NodeApiError(this.getNode(), error as JsonObject);
 	}
@@ -76,24 +95,16 @@ export async function threadsApiRequestAllItems(
 
 	do {
 		if (nextUrl) {
-			const authenticationMethod = this.getNodeParameter(
-				'authentication',
-				0,
-				'oAuth2',
-			) as 'oAuth2' | 'accessToken';
-			const credentialType =
-				authenticationMethod === 'oAuth2' ? 'threadsOAuth2Api' : 'threadsApi';
-
+			const accessToken = await getAccessToken(this);
 			try {
-				responseData = await this.helpers.httpRequestWithAuthentication.call(
-					this,
-					credentialType,
-					{
-						method: 'GET',
-						url: nextUrl,
-						json: true,
+				responseData = await this.helpers.httpRequest.call(this, {
+					method: 'GET',
+					url: nextUrl,
+					json: true,
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
 					},
-				);
+				});
 			} catch (error) {
 				throw new NodeApiError(this.getNode(), error as JsonObject);
 			}

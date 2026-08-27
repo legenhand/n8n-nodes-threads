@@ -1,6 +1,6 @@
 {
 	"name": "@rizkifirmansyah/n8n-nodes-threads-api",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "n8n community node for the official Meta Threads API",
 	"license": "MIT",
 	"homepage": "https://github.com/legenhand/n8n-nodes-threads",
