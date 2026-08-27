@@ -1,0 +1,57 @@
+{
+	"name": "n8n-nodes-threads",
+	"version": "1.0.0",
+	"description": "n8n community node for the official Meta Threads API",
+	"license": "MIT",
+	"homepage": "https://github.com/legenhand/n8n-nodes-threads",
+	"keywords": [
+		"n8n-community-node-package",
+		"threads",
+		"meta",
+		"social-media",
+		"threads-api"
+	],
+	"author": {
+		"name": "Rizki Firmansyah",
+		"email": "firmansyah720.fs@gmail.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/legenhand/n8n-nodes-threads.git"
+	},
+	"main": "index.js",
+	"scripts": {
+		"build": "n8n-node build",
+		"build:watch": "tsc --watch",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"release": "n8n-node release",
+		"prepublishOnly": "n8n-node prerelease"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": true,
+		"credentials": [
+			"dist/credentials/ThreadsOAuth2Api.credentials.js",
+			"dist/credentials/ThreadsApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/Threads/Threads.node.js",
+			"dist/nodes/Threads/ThreadsTrigger.node.js"
+		]
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "*",
+		"eslint": "9.32.0",
+		"prettier": "3.6.2",
+		"release-it": "^19.0.4",
+		"typescript": "5.9.2"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
+}
