@@ -12,6 +12,22 @@ import { NodeApiError, NodeOperationError, sleep } from 'n8n-workflow';
 export const THREADS_API_BASE_URL = 'https://graph.threads.net/v1.0';
 
 /**
+ * Format fields whether provided as string or string array from multiOptions
+ */
+export function formatFields(
+	fields: string | string[] | undefined,
+	defaultFields = '',
+): string {
+	if (Array.isArray(fields)) {
+		return fields.join(',');
+	}
+	if (typeof fields === 'string' && fields.length > 0) {
+		return fields;
+	}
+	return defaultFields;
+}
+
+/**
  * Helper to get the access token from either OAuth2 or direct API token credentials
  */
 async function getAccessToken(

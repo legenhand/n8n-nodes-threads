@@ -29,6 +29,7 @@ import {
 	searchOperations,
 } from './SearchDescription';
 import {
+	formatFields,
 	publishContainer,
 	threadsApiRequest,
 	threadsApiRequestAllItems,
@@ -356,7 +357,7 @@ export class Threads implements INodeType {
 						responseData = await publishContainer.call(this, userId, creationId);
 					} else if (operation === 'get') {
 						const mediaId = this.getNodeParameter('mediaId', i) as string;
-						const fields = this.getNodeParameter('fields', i) as string;
+						const fields = formatFields(this.getNodeParameter('fields', i) as string | string[]);
 						responseData = await threadsApiRequest.call(
 							this,
 							'GET',
@@ -378,7 +379,7 @@ export class Threads implements INodeType {
 
 						const qs: IDataObject = {};
 						if (options.fields) {
-							qs.fields = options.fields;
+							qs.fields = formatFields(options.fields as string | string[]);
 						}
 						if (options.since) {
 							qs.since = Math.floor(new Date(options.since as string).getTime() / 1000);
@@ -417,7 +418,7 @@ export class Threads implements INodeType {
 				// =================================================================
 				else if (resource === 'user') {
 					if (operation === 'getMe') {
-						const fields = this.getNodeParameter('fields', i) as string;
+						const fields = formatFields(this.getNodeParameter('fields', i) as string | string[]);
 						responseData = await threadsApiRequest.call(
 							this,
 							'GET',
@@ -427,7 +428,7 @@ export class Threads implements INodeType {
 						);
 					} else if (operation === 'get') {
 						const userId = this.getNodeParameter('userId', i) as string;
-						const fields = this.getNodeParameter('fields', i) as string;
+						const fields = formatFields(this.getNodeParameter('fields', i) as string | string[]);
 						responseData = await threadsApiRequest.call(
 							this,
 							'GET',
@@ -437,7 +438,7 @@ export class Threads implements INodeType {
 						);
 					} else if (operation === 'getPublishingLimit') {
 						const userId = this.getNodeParameter('userId', i, 'me') as string;
-						const fields = this.getNodeParameter('fields', i) as string;
+						const fields = formatFields(this.getNodeParameter('fields', i) as string | string[]);
 						responseData = await threadsApiRequest.call(
 							this,
 							'GET',
@@ -656,7 +657,7 @@ export class Threads implements INodeType {
 
 						const qs: IDataObject = {};
 						if (options.fields) {
-							qs.fields = options.fields;
+							qs.fields = formatFields(options.fields as string | string[]);
 						}
 						if (options.reverse !== undefined) {
 							qs.reverse = options.reverse;
@@ -691,7 +692,7 @@ export class Threads implements INodeType {
 
 						const qs: IDataObject = {};
 						if (options.fields) {
-							qs.fields = options.fields;
+							qs.fields = formatFields(options.fields as string | string[]);
 						}
 						if (options.reverse !== undefined) {
 							qs.reverse = options.reverse;
@@ -787,7 +788,7 @@ export class Threads implements INodeType {
 						};
 
 						if (options.fields) {
-							qs.fields = options.fields;
+							qs.fields = formatFields(options.fields as string | string[]);
 						}
 
 						if (returnAll) {

@@ -66,17 +66,25 @@ export const userFields: INodeProperties[] = [
 		description: 'The Threads User ID to retrieve profile for',
 	},
 	{
-		displayName: 'Fields',
+		displayName: 'Fields to Return',
 		name: 'fields',
-		type: 'string',
-		default: 'id,username,name,threads_profile_picture_url,threads_biography',
+		type: 'multiOptions',
+		options: [
+			{ name: 'Biography', value: 'threads_biography' },
+			{ name: 'ID', value: 'id' },
+			{ name: 'Is Private Profile', value: 'is_private' },
+			{ name: 'Name', value: 'name' },
+			{ name: 'Profile Picture URL', value: 'threads_profile_picture_url' },
+			{ name: 'Username', value: 'username' },
+		],
+		default: ['id', 'username', 'name', 'threads_profile_picture_url', 'threads_biography'],
 		displayOptions: {
 			show: {
 				resource: ['user'],
 				operation: ['get', 'getMe'],
 			},
 		},
-		description: 'Comma-separated list of profile fields to return',
+		description: 'Choose which fields to include in the output. All fields are selected by default.',
 	},
 	{
 		displayName: 'User ID',
@@ -93,17 +101,23 @@ export const userFields: INodeProperties[] = [
 		description: 'The Threads User ID or "me" for authenticated user',
 	},
 	{
-		displayName: 'Fields',
+		displayName: 'Fields to Return',
 		name: 'fields',
-		type: 'string',
-		default: 'quota_usage,config,total_quota_usage,quota_duration',
+		type: 'multiOptions',
+		options: [
+			{ name: 'Config', value: 'config' },
+			{ name: 'Quota Duration', value: 'quota_duration' },
+			{ name: 'Quota Usage', value: 'quota_usage' },
+			{ name: 'Total Quota Usage', value: 'total_quota_usage' },
+		],
+		default: ['quota_usage', 'config', 'total_quota_usage', 'quota_duration'],
 		displayOptions: {
 			show: {
 				resource: ['user'],
 				operation: ['getPublishingLimit'],
 			},
 		},
-		description: 'Comma-separated list of fields to return for publishing limit',
+		description: 'Choose which fields to include in the output. All fields are selected by default.',
 	},
 
 	// ----------------------------------
