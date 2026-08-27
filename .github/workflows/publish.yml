@@ -83,9 +83,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Release
+      - name: Build and Lint
+        run: |
+          npm run lint
+          npm run build
+
+      - name: Publish to npm with Provenance
         run: |
           [ -n "$NPM_TOKEN" ] && npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-          npm run release
+          npm publish --provenance --access public
         env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
