@@ -445,6 +445,103 @@ export class Threads implements INodeType {
 							{},
 							{ fields },
 						);
+					} else if (operation === 'exchangeToken') {
+						let clientSecret = this.getNodeParameter('clientSecret', i, '') as string;
+						let accessToken = this.getNodeParameter('accessToken', i, '') as string;
+
+						const authenticationMethod = this.getNodeParameter(
+							'authentication',
+							i,
+							'oAuth2',
+						) as 'oAuth2' | 'accessToken';
+
+						if (!clientSecret && authenticationMethod === 'oAuth2') {
+							const credentials = await this.getCredentials('threadsOAuth2Api');
+							clientSecret = (credentials.clientSecret as string) || '';
+						}
+
+						if (!accessToken) {
+							if (authenticationMethod === 'oAuth2') {
+								const credentials = await this.getCredentials('threadsOAuth2Api');
+								const oauthTokenData = (credentials.oauthTokenData || {}) as IDataObject;
+								accessToken =
+									(oauthTokenData.access_token as string) ||
+									(credentials.accessToken as string) ||
+									'';
+							} else {
+								const credentials = await this.getCredentials('threadsApi');
+								accessToken = (credentials.accessToken as string) || '';
+							}
+						}
+
+						if (!clientSecret) {
+							throw new NodeOperationError(
+								this.getNode(),
+								'App Secret is required to exchange for a long-lived token.',
+								{ itemIndex: i },
+							);
+						}
+
+						if (!accessToken) {
+							throw new NodeOperationError(
+								this.getNode(),
+								'Access Token is required to exchange for a long-lived token.',
+								{ itemIndex: i },
+							);
+						}
+
+						responseData = await threadsApiRequest.call(
+							this,
+							'GET',
+							'/access_token',
+							{},
+							{
+								grant_type: 'th_exchange_token',
+								client_secret: clientSecret,
+								access_token: accessToken,
+							},
+						);
+					} else if (operation === 'refreshToken') {
+						let accessToken = this.getNodeParameter('accessToken', i, '') as string;
+
+						if (!accessToken) {
+							const authenticationMethod = this.getNodeParameter(
+								'authentication',
+								i,
+								'oAuth2',
+							) as 'oAuth2' | 'accessToken';
+
+							if (authenticationMethod === 'oAuth2') {
+								const credentials = await this.getCredentials('threadsOAuth2Api');
+								const oauthTokenData = (credentials.oauthTokenData || {}) as IDataObject;
+								accessToken =
+									(oauthTokenData.access_token as string) ||
+									(credentials.accessToken as string) ||
+									'';
+							} else {
+								const credentials = await this.getCredentials('threadsApi');
+								accessToken = (credentials.accessToken as string) || '';
+							}
+						}
+
+						if (!accessToken) {
+							throw new NodeOperationError(
+								this.getNode(),
+								'Access Token is required to refresh a long-lived token.',
+								{ itemIndex: i },
+							);
+						}
+
+						responseData = await threadsApiRequest.call(
+							this,
+							'GET',
+							'/refresh_access_token',
+							{},
+							{
+								grant_type: 'th_refresh_token',
+								access_token: accessToken,
+							},
+						);
 					}
 				}
 

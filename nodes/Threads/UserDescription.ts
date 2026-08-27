@@ -13,6 +13,12 @@ export const userOperations: INodeProperties[] = [
 		},
 		options: [
 			{
+				name: 'Exchange for Long-Lived Token',
+				value: 'exchangeToken',
+				description: 'Exchange a short-lived token (1 hour) for a long-lived token (60 days)',
+				action: 'Exchange for a long lived token',
+			},
+			{
 				name: 'Get Me',
 				value: 'getMe',
 				description: 'Get profile information of the authenticated user',
@@ -29,6 +35,12 @@ export const userOperations: INodeProperties[] = [
 				value: 'getPublishingLimit',
 				description: 'Get publishing rate limit and quota usage for authenticated user',
 				action: 'Get publishing limit',
+			},
+			{
+				name: 'Refresh Long-Lived Token',
+				value: 'refreshToken',
+				description: 'Refresh an unexpired long-lived token to reset its 60 days validity',
+				action: 'Refresh a long lived token',
 			},
 		],
 		default: 'getMe',
@@ -92,5 +104,61 @@ export const userFields: INodeProperties[] = [
 			},
 		},
 		description: 'Comma-separated list of fields to return for publishing limit',
+	},
+
+	// ----------------------------------
+	//         user: exchangeToken
+	// ----------------------------------
+	{
+		displayName: 'App Secret',
+		name: 'clientSecret',
+		type: 'string',
+		typeOptions: {
+			password: true,
+		},
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['user'],
+				operation: ['exchangeToken'],
+			},
+		},
+		description: 'Your Threads App Secret from Meta App Dashboard. If left empty, will use the secret from OAuth2 credentials.',
+	},
+	{
+		displayName: 'Short-Lived Access Token',
+		name: 'accessToken',
+		type: 'string',
+		typeOptions: {
+			password: true,
+		},
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['user'],
+				operation: ['exchangeToken'],
+			},
+		},
+		description: 'The short-lived access token to exchange. If left empty, uses the token from credentials.',
+	},
+
+	// ----------------------------------
+	//         user: refreshToken
+	// ----------------------------------
+	{
+		displayName: 'Long-Lived Access Token',
+		name: 'accessToken',
+		type: 'string',
+		typeOptions: {
+			password: true,
+		},
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['user'],
+				operation: ['refreshToken'],
+			},
+		},
+		description: 'The unexpired long-lived access token to refresh. If left empty, uses the token from credentials.',
 	},
 ];

@@ -102,6 +102,8 @@ Best for personal automation and bot accounts using Long-Lived User Tokens (vali
 | **Get Me** | Retrieves the authenticated user's profile info (`id`, `username`, `name`, `profile picture`, `bio`) |
 | **Get Profile** | Retrieves profile details for a given Threads User ID |
 | **Get Publishing Limit** | Retrieves current rate limit and quota usage (`/me/threads_publishing_limit`) |
+| **Exchange for Long-Lived Token** | Exchanges a short-lived token (1 hour) for a 60-day long-lived token |
+| **Refresh Long-Lived Token** | Refreshes an unexpired long-lived token to reset its 60 days validity |
 
 ### Insight
 | Operation | Description |
