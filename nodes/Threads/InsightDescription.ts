@@ -48,6 +48,31 @@ export const insightFields: INodeProperties[] = [
 		description: 'The ID of the post/media to retrieve insights for',
 	},
 	{
+		displayName: 'Metrics Selection',
+		name: 'metricsSelection',
+		type: 'options',
+		options: [
+			{
+				name: 'All Metrics',
+				value: 'all',
+				description: 'Fetch all available metrics',
+			},
+			{
+				name: 'Selected Metrics',
+				value: 'selected',
+				description: 'Choose specific metrics to retrieve',
+			},
+		],
+		default: 'all',
+		displayOptions: {
+			show: {
+				resource: ['insight'],
+				operation: ['getMedia'],
+			},
+		},
+		description: 'Whether to retrieve all available metrics or select specific ones',
+	},
+	{
 		displayName: 'Metrics',
 		name: 'mediaMetrics',
 		type: 'multiOptions',
@@ -79,6 +104,7 @@ export const insightFields: INodeProperties[] = [
 			show: {
 				resource: ['insight'],
 				operation: ['getMedia'],
+				metricsSelection: ['selected'],
 			},
 		},
 		description: 'The metrics to retrieve for the post',
@@ -100,6 +126,31 @@ export const insightFields: INodeProperties[] = [
 			},
 		},
 		description: 'The Threads User ID or "me" for authenticated user',
+	},
+	{
+		displayName: 'Metrics Selection',
+		name: 'metricsSelection',
+		type: 'options',
+		options: [
+			{
+				name: 'All Metrics',
+				value: 'all',
+				description: 'Fetch all standard user metrics',
+			},
+			{
+				name: 'Selected Metrics',
+				value: 'selected',
+				description: 'Choose specific user metrics to retrieve',
+			},
+		],
+		default: 'all',
+		displayOptions: {
+			show: {
+				resource: ['insight'],
+				operation: ['getUser'],
+			},
+		},
+		description: 'Whether to retrieve all available metrics or select specific ones',
 	},
 	{
 		displayName: 'Metrics',
@@ -141,6 +192,7 @@ export const insightFields: INodeProperties[] = [
 			show: {
 				resource: ['insight'],
 				operation: ['getUser'],
+				metricsSelection: ['selected'],
 			},
 		},
 		description: 'The metrics to retrieve for the account',

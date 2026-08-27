@@ -331,6 +331,31 @@ export const postFields: INodeProperties[] = [
 		description: 'The ID of the post/media to retrieve or delete',
 	},
 	{
+		displayName: 'Fields Selection',
+		name: 'fieldsSelection',
+		type: 'options',
+		options: [
+			{
+				name: 'All Fields',
+				value: 'all',
+				description: 'Fetch all standard post fields',
+			},
+			{
+				name: 'Selected Fields',
+				value: 'selected',
+				description: 'Choose specific post fields to retrieve',
+			},
+		],
+		default: 'all',
+		displayOptions: {
+			show: {
+				resource: ['post'],
+				operation: ['get'],
+			},
+		},
+		description: 'Whether to retrieve all available fields or select specific ones',
+	},
+	{
 		displayName: 'Fields to Return',
 		name: 'fields',
 		type: 'multiOptions',
@@ -378,6 +403,7 @@ export const postFields: INodeProperties[] = [
 			show: {
 				resource: ['post'],
 				operation: ['get'],
+				fieldsSelection: ['selected'],
 			},
 		},
 		description: 'Choose which fields to include in the output. All fields are selected by default.',

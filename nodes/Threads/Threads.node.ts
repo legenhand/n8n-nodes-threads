@@ -357,7 +357,11 @@ export class Threads implements INodeType {
 						responseData = await publishContainer.call(this, userId, creationId);
 					} else if (operation === 'get') {
 						const mediaId = this.getNodeParameter('mediaId', i) as string;
-						const fields = formatFields(this.getNodeParameter('fields', i) as string | string[]);
+						const fieldsSelection = this.getNodeParameter('fieldsSelection', i, 'all') as string;
+						const fields =
+							fieldsSelection === 'all'
+								? 'id,media_product_type,media_type,media_url,permalink,owner,username,text,timestamp,shortcode,thumbnail_url,children,is_quote_post,has_replies,root_post,replied_to,is_reply,hide_status,reply_audience'
+								: formatFields(this.getNodeParameter('fields', i) as string | string[]);
 						responseData = await threadsApiRequest.call(
 							this,
 							'GET',
@@ -418,7 +422,11 @@ export class Threads implements INodeType {
 				// =================================================================
 				else if (resource === 'user') {
 					if (operation === 'getMe') {
-						const fields = formatFields(this.getNodeParameter('fields', i) as string | string[]);
+						const fieldsSelection = this.getNodeParameter('fieldsSelection', i, 'all') as string;
+						const fields =
+							fieldsSelection === 'all'
+								? 'id,username,name,threads_profile_picture_url,threads_biography,is_private'
+								: formatFields(this.getNodeParameter('fields', i) as string | string[]);
 						responseData = await threadsApiRequest.call(
 							this,
 							'GET',
@@ -428,7 +436,11 @@ export class Threads implements INodeType {
 						);
 					} else if (operation === 'get') {
 						const userId = this.getNodeParameter('userId', i) as string;
-						const fields = formatFields(this.getNodeParameter('fields', i) as string | string[]);
+						const fieldsSelection = this.getNodeParameter('fieldsSelection', i, 'all') as string;
+						const fields =
+							fieldsSelection === 'all'
+								? 'id,username,name,threads_profile_picture_url,threads_biography,is_private'
+								: formatFields(this.getNodeParameter('fields', i) as string | string[]);
 						responseData = await threadsApiRequest.call(
 							this,
 							'GET',
@@ -438,7 +450,11 @@ export class Threads implements INodeType {
 						);
 					} else if (operation === 'getPublishingLimit') {
 						const userId = this.getNodeParameter('userId', i, 'me') as string;
-						const fields = formatFields(this.getNodeParameter('fields', i) as string | string[]);
+						const fieldsSelection = this.getNodeParameter('fieldsSelection', i, 'all') as string;
+						const fields =
+							fieldsSelection === 'all'
+								? 'quota_usage,config,total_quota_usage,quota_duration'
+								: formatFields(this.getNodeParameter('fields', i) as string | string[]);
 						responseData = await threadsApiRequest.call(
 							this,
 							'GET',
@@ -739,7 +755,11 @@ export class Threads implements INodeType {
 				else if (resource === 'insight') {
 					if (operation === 'getMedia') {
 						const mediaId = this.getNodeParameter('mediaId', i) as string;
-						const metrics = this.getNodeParameter('mediaMetrics', i) as string[];
+						const metricsSelection = this.getNodeParameter('metricsSelection', i, 'all') as string;
+						const metrics =
+							metricsSelection === 'all'
+								? ['views', 'likes', 'replies', 'reposts', 'quotes']
+								: (this.getNodeParameter('mediaMetrics', i) as string[]);
 						responseData = await threadsApiRequest.call(
 							this,
 							'GET',
@@ -749,7 +769,11 @@ export class Threads implements INodeType {
 						);
 					} else if (operation === 'getUser') {
 						const userId = this.getNodeParameter('userId', i, 'me') as string;
-						const metrics = this.getNodeParameter('userMetrics', i) as string[];
+						const metricsSelection = this.getNodeParameter('metricsSelection', i, 'all') as string;
+						const metrics =
+							metricsSelection === 'all'
+								? ['views', 'likes', 'replies', 'reposts', 'quotes', 'followers_count']
+								: (this.getNodeParameter('userMetrics', i) as string[]);
 						const options = this.getNodeParameter('options', i, {}) as IDataObject;
 
 						const qs: IDataObject = {

@@ -66,6 +66,31 @@ export const userFields: INodeProperties[] = [
 		description: 'The Threads User ID to retrieve profile for',
 	},
 	{
+		displayName: 'Fields Selection',
+		name: 'fieldsSelection',
+		type: 'options',
+		options: [
+			{
+				name: 'All Fields',
+				value: 'all',
+				description: 'Fetch all standard profile fields',
+			},
+			{
+				name: 'Selected Fields',
+				value: 'selected',
+				description: 'Choose specific profile fields to retrieve',
+			},
+		],
+		default: 'all',
+		displayOptions: {
+			show: {
+				resource: ['user'],
+				operation: ['get', 'getMe'],
+			},
+		},
+		description: 'Whether to retrieve all available fields or select specific ones',
+	},
+	{
 		displayName: 'Fields to Return',
 		name: 'fields',
 		type: 'multiOptions',
@@ -82,6 +107,7 @@ export const userFields: INodeProperties[] = [
 			show: {
 				resource: ['user'],
 				operation: ['get', 'getMe'],
+				fieldsSelection: ['selected'],
 			},
 		},
 		description: 'Choose which fields to include in the output. All fields are selected by default.',
@@ -101,6 +127,31 @@ export const userFields: INodeProperties[] = [
 		description: 'The Threads User ID or "me" for authenticated user',
 	},
 	{
+		displayName: 'Fields Selection',
+		name: 'fieldsSelection',
+		type: 'options',
+		options: [
+			{
+				name: 'All Fields',
+				value: 'all',
+				description: 'Fetch all publishing limit fields',
+			},
+			{
+				name: 'Selected Fields',
+				value: 'selected',
+				description: 'Choose specific publishing limit fields to retrieve',
+			},
+		],
+		default: 'all',
+		displayOptions: {
+			show: {
+				resource: ['user'],
+				operation: ['getPublishingLimit'],
+			},
+		},
+		description: 'Whether to retrieve all available fields or select specific ones',
+	},
+	{
 		displayName: 'Fields to Return',
 		name: 'fields',
 		type: 'multiOptions',
@@ -115,6 +166,7 @@ export const userFields: INodeProperties[] = [
 			show: {
 				resource: ['user'],
 				operation: ['getPublishingLimit'],
+				fieldsSelection: ['selected'],
 			},
 		},
 		description: 'Choose which fields to include in the output. All fields are selected by default.',
