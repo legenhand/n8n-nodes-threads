@@ -245,11 +245,6 @@ export class Threads implements INodeType {
 								body,
 							);
 							containerId = containerResponse.id as string;
-
-							// If we are publishing immediately, wait for video processing
-							if (operation === 'create') {
-								await waitForContainerReady.call(this, containerId);
-							}
 						} else if (mediaType === 'CAROUSEL') {
 							const carouselData = this.getNodeParameter('carouselItems', i) as {
 								items?: Array<{
@@ -339,7 +334,10 @@ export class Threads implements INodeType {
 								status: 'CONTAINER_CREATED',
 							};
 						} else {
-							// Publish container immediately
+							// Wait for container to be ready before publishing
+							await waitForContainerReady.call(this, containerId);
+
+							// Publish container
 							const publishResponse = await publishContainer.call(
 								this,
 								userId,
@@ -354,6 +352,7 @@ export class Threads implements INodeType {
 					} else if (operation === 'publish') {
 						const userId = this.getNodeParameter('userId', i, 'me') as string;
 						const creationId = this.getNodeParameter('creationId', i) as string;
+						await waitForContainerReady.call(this, creationId);
 						responseData = await publishContainer.call(this, userId, creationId);
 					} else if (operation === 'get') {
 						const mediaId = this.getNodeParameter('mediaId', i) as string;
@@ -651,9 +650,10 @@ export class Threads implements INodeType {
 								body,
 							);
 							containerId = containerResponse.id as string;
-
-							await waitForContainerReady.call(this, containerId);
 						}
+
+						// Wait for reply container to be ready before publishing
+						await waitForContainerReady.call(this, containerId);
 
 						const publishResponse = await publishContainer.call(
 							this,

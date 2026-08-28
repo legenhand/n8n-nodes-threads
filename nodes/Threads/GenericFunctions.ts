@@ -146,7 +146,7 @@ export async function threadsApiRequestAllItems(
 }
 
 /**
- * Poll media container status until FINISHED, ERROR, or timeout
+ * Poll media container status until FINISHED, PUBLISHED, ERROR, or timeout
  */
 export async function waitForContainerReady(
 	this: IExecuteFunctions,
@@ -155,32 +155,40 @@ export async function waitForContainerReady(
 	delayMs = 2000,
 ): Promise<IDataObject> {
 	for (let attempt = 0; attempt < maxAttempts; attempt++) {
-		const statusResponse = await threadsApiRequest.call(
-			this,
-			'GET',
-			`/${containerId}`,
-			{},
-			{ fields: 'id,status,error_message' },
-		);
-
-		const status = statusResponse.status;
-
-		if (status === 'FINISHED') {
-			return statusResponse;
+		let statusResponse: IDataObject | undefined;
+		try {
+			statusResponse = await threadsApiRequest.call(
+				this,
+				'GET',
+				`/${containerId}`,
+				{},
+				{ fields: 'id,status,error_message' },
+			);
+		} catch {
+			// When container is newly created, querying status might return 400/404 or OAuthException 24 (not found yet due to replication latency)
+			// Swallow transient errors during polling attempts
 		}
 
-		if (status === 'ERROR') {
-			throw new NodeOperationError(
-				this.getNode(),
-				`Media container ${containerId} processing failed: ${statusResponse.error_message || 'Unknown error'}`,
-			);
-		}
+		if (statusResponse) {
+			const status = statusResponse.status as string | undefined;
 
-		if (status === 'EXPIRED') {
-			throw new NodeOperationError(
-				this.getNode(),
-				`Media container ${containerId} has expired.`,
-			);
+			if (status === 'FINISHED' || status === 'PUBLISHED') {
+				return statusResponse;
+			}
+
+			if (status === 'ERROR') {
+				throw new NodeOperationError(
+					this.getNode(),
+					`Media container ${containerId} processing failed: ${(statusResponse.error_message as string) || 'Unknown error'}`,
+				);
+			}
+
+			if (status === 'EXPIRED') {
+				throw new NodeOperationError(
+					this.getNode(),
+					`Media container ${containerId} has expired.`,
+				);
+			}
 		}
 
 		// Wait before polling again
@@ -194,18 +202,46 @@ export async function waitForContainerReady(
 }
 
 /**
- * Helper to publish a media container
+ * Helper to publish a media container with retry for replication delays
  */
 export async function publishContainer(
 	this: IExecuteFunctions,
 	userId: string,
 	containerId: string,
+	maxAttempts = 10,
+	delayMs = 3000,
 ): Promise<IDataObject> {
-	return await threadsApiRequest.call(
-		this,
-		'POST',
-		`/${userId}/threads_publish`,
-		{},
-		{ creation_id: containerId },
+	for (let attempt = 0; attempt < maxAttempts; attempt++) {
+		try {
+			return await threadsApiRequest.call(
+				this,
+				'POST',
+				`/${userId}/threads_publish`,
+				{},
+				{ creation_id: containerId },
+			);
+		} catch (error) {
+			const isLastAttempt = attempt === maxAttempts - 1;
+			const errorString = JSON.stringify(error);
+			const isNotReadyError =
+				errorString.includes('4279009') ||
+				errorString.includes('"code":24') ||
+				errorString.includes('"code": 24') ||
+				errorString.includes('The requested resource does not exist') ||
+				errorString.includes('Media not found') ||
+				errorString.includes('找不到素材');
+
+			if (isNotReadyError && !isLastAttempt) {
+				await sleep(delayMs);
+				continue;
+			}
+
+			throw new NodeApiError(this.getNode(), error as JsonObject);
+		}
+	}
+
+	throw new NodeOperationError(
+		this.getNode(),
+		`Media container ${containerId} could not be published within timeout period.`,
 	);
 }
