@@ -34,7 +34,8 @@ Manage your Threads presence at scale: create posts (text, images, videos, carou
 - 🖼️ **Multi-Format Support**: Create **Text**, **Single Image**, **Single Video**, and multi-media **Carousels** (2–10 items).
 - 💬 **Reply & Conversation Management**: Create replies, view full discussion threads, and hide/unhide replies.
 - 📊 **Rich Analytics**: Retrieve engagement metrics (views, likes, replies, reposts, quotes) for posts and user accounts.
-- 🔍 **Keyword Search**: Discover and monitor public Threads conversations.
+- 🔍 **Keyword & Topic Tag Search**: Discover and monitor public Threads conversations by keyword or topic tag (`#`), with ordering (`TOP` / `RECENT`) and media/author filters.
+- 📬 **User Mentions & REST API**: Retrieve posts and replies mentioning a user.
 - ⚡ **Webhook Trigger**: Receive real-time events (`threads_mentions`, `threads_replies`) with automated Meta Hub challenge verification.
 
 ---
@@ -99,7 +100,8 @@ Best for personal automation and bot accounts using Long-Lived User Tokens (vali
 ### User
 | Operation | Description |
 | :--- | :--- |
-| **Get Me** | Retrieves the authenticated user's profile info (`id`, `username`, `name`, `profile picture`, `bio`) |
+| **Get Me** | Retrieves the authenticated user's profile info (`id`, `username`, `name`, `profile picture`, `bio`, `recently searched keywords`) |
+| **Get Mentions** | Retrieves posts and replies where a user has been mentioned (`/{userId}/mentions`) |
 | **Get Profile** | Retrieves profile details for a given Threads User ID |
 | **Get Publishing Limit** | Retrieves current rate limit and quota usage (`/me/threads_publishing_limit`) |
 | **Exchange for Long-Lived Token** | Exchanges a short-lived token (1 hour) for a 60-day long-lived token |
@@ -114,7 +116,7 @@ Best for personal automation and bot accounts using Long-Lived User Tokens (vali
 ### Search
 | Operation | Description |
 | :--- | :--- |
-| **Keyword Search** | Searches public Threads posts matching a keyword query |
+| **Keyword / Topic Tag Search** | Searches public Threads posts matching a keyword or topic tag (`#`) with ordering (`TOP` / `RECENT`) and filters (`mediaType`, `authorUsername`, `since`, `until`) |
 
 ### Threads Trigger (Webhook)
 Listens for incoming webhooks from Meta:

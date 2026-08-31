@@ -433,6 +433,44 @@ export class Threads implements INodeType {
 							{},
 							{ fields },
 						);
+					} else if (operation === 'getMentions') {
+						const userId = this.getNodeParameter('userId', i, 'me') as string;
+						const returnAll = this.getNodeParameter('returnAll', i) as boolean;
+						const options = this.getNodeParameter('options', i, {}) as IDataObject;
+
+						const qs: IDataObject = {};
+						if (options.fields) {
+							qs.fields = formatFields(options.fields as string | string[]);
+						}
+						if (options.since) {
+							qs.since = Math.floor(new Date(options.since as string).getTime() / 1000);
+						}
+						if (options.until) {
+							qs.until = Math.floor(new Date(options.until as string).getTime() / 1000);
+						}
+						if (options.before) {
+							qs.before = options.before;
+						}
+						if (options.after) {
+							qs.after = options.after;
+						}
+
+						if (returnAll) {
+							responseData = await threadsApiRequestAllItems.call(
+								this,
+								`/${userId}/mentions`,
+								qs,
+								0,
+							);
+						} else {
+							const limit = this.getNodeParameter('limit', i, 50) as number;
+							responseData = await threadsApiRequestAllItems.call(
+								this,
+								`/${userId}/mentions`,
+								qs,
+								limit,
+							);
+						}
 					} else if (operation === 'get') {
 						const userId = this.getNodeParameter('userId', i) as string;
 						const fieldsSelection = this.getNodeParameter('fieldsSelection', i, 'all') as string;
@@ -803,16 +841,41 @@ export class Threads implements INodeType {
 				else if (resource === 'search') {
 					if (operation === 'keyword') {
 						const query = this.getNodeParameter('query', i) as string;
+						const searchMode = this.getNodeParameter('searchMode', i, 'KEYWORD') as string;
+						const searchType = this.getNodeParameter('searchType', i, 'TOP') as string;
 						const returnAll = this.getNodeParameter('returnAll', i) as boolean;
 						const options = this.getNodeParameter('options', i, {}) as IDataObject;
 
 						const qs: IDataObject = {
 							q: query,
-							search_type: 'posts',
+							search_type: searchType,
 						};
+
+						if (searchMode === 'TAG') {
+							qs.search_mode = 'TAG';
+						}
+
+						if (options.authorUsername) {
+							qs.author_username = (options.authorUsername as string).replace(/^@/, '');
+						}
+
+						if (options.mediaType && options.mediaType !== 'ALL') {
+							qs.media_type = options.mediaType;
+						}
+
+						if (options.since) {
+							qs.since = Math.floor(new Date(options.since as string).getTime() / 1000);
+						}
+
+						if (options.until) {
+							qs.until = Math.floor(new Date(options.until as string).getTime() / 1000);
+						}
 
 						if (options.fields) {
 							qs.fields = formatFields(options.fields as string | string[]);
+						} else {
+							qs.fields =
+								'id,text,media_type,permalink,timestamp,username,has_replies,is_quote_post,is_reply';
 						}
 
 						if (returnAll) {
@@ -823,7 +886,7 @@ export class Threads implements INodeType {
 								0,
 							);
 						} else {
-							const limit = this.getNodeParameter('limit', i, 20) as number;
+							const limit = this.getNodeParameter('limit', i, 50) as number;
 							responseData = await threadsApiRequestAllItems.call(
 								this,
 								'/keyword_search',
